@@ -7,9 +7,9 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/hosseinmirzapur/goravel-cli/cmd/start"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
-	"github.comn/hosseinmirzapur/goravel-cli/cmd/start"
 )
 
 var cfgFile string
