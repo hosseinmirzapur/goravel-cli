@@ -62,7 +62,7 @@ var StartCmd = &cobra.Command{
 		utils.Error("start", "generate app key", err)
 		utils.Success("generated successfully")
 
-		utils.Alert("You project is ready! Create something amazing :)")
+		utils.Alert("You're set! Create something amazing :)")
 	},
 }
 
