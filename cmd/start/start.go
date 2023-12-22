@@ -29,40 +29,40 @@ var StartCmd = &cobra.Command{
 		// clone goravel repo
 		utils.Info("cloning...")
 		err := cloneGoravelRepo(appName)
-		utils.HandleError("start", "clone goravel repository", err)
+		utils.Error("start", "clone goravel repository", err)
 		utils.Success("cloned successfully")
 
 		// remove .git from cloned repository
 		utils.Info("removing .git directory...")
 		err = removeVersionControlDir(appName)
-		utils.HandleError("start", "remove version control directory", err)
+		utils.Error("start", "remove version control directory", err)
 		utils.Success("removed successfully")
 
 		// cd into project
 		utils.Info("cd into project...")
 		err = os.Chdir(appName)
-		utils.HandleError("start", "cd into project", err)
+		utils.Error("start", "cd into project", err)
 		utils.Success("cd successfully")
 
 		// run go mod tidy to install dependencies
 		utils.Info("installing dependencies...")
 		err = goModTidy()
-		utils.HandleError("start", "run go mod tidy", err)
+		utils.Error("start", "run go mod tidy", err)
 		utils.Success("installed successfully")
 
 		// copy .env from .env.example
 		utils.Info("copy .env from .env.example...")
 		err = copyDotEnv()
-		utils.HandleError("start", "copy .env from .env.example", err)
+		utils.Error("start", "copy .env from .env.example", err)
 		utils.Success("copied successfully")
 
 		// generate app key from artisan console
 		utils.Info("generating app key...")
 		err = generateAppKey()
-		utils.HandleError("start", "generate app key", err)
+		utils.Error("start", "generate app key", err)
 		utils.Success("generated successfully")
 
-		utils.Success("You project is ready! Create something amazing :)")
+		utils.Alert("You project is ready! Create something amazing :)")
 	},
 }
 

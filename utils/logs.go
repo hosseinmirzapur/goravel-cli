@@ -6,7 +6,7 @@ import (
 	"strings"
 )
 
-func HandleError(cmdSection, desc string, err error) {
+func Error(cmdSection, desc string, err error) {
 	if err != nil {
 		log.Printf(
 			"%s%s:%s/%s\n",
@@ -33,6 +33,16 @@ func Info(msg string) {
 func Success(msg string) {
 	log.Println(
 		Green,
+		strings.Repeat("#", 10),
+		msg,
+		strings.Repeat("#", 10),
+		Reset,
+	)
+}
+
+func Alert(msg string) {
+	log.Println(
+		Yellow,
 		strings.Repeat("#", 10),
 		msg,
 		strings.Repeat("#", 10),
