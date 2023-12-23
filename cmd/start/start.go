@@ -17,9 +17,10 @@ var (
 )
 
 var StartCmd = &cobra.Command{
-	Use:   "start",
-	Short: "Start New Goravel App",
-	Long:  `Create a fresh Goravel application`,
+	Use:     "start",
+	Short:   "Start New Goravel App",
+	Long:    `Create a fresh Goravel application`,
+	Example: "goravel-cli start -n <PROJECT_NAME>",
 	Run: func(cmd *cobra.Command, args []string) {
 		// set project name
 		if appName == "." || appName == "" {
