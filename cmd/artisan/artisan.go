@@ -32,7 +32,7 @@ func init() {
 
 func runArtisanCommand(args []string) {
 	plainText := strings.Join(args, " ")
-	command := exec.Command("go", "run", ". artisan", plainText)
+	command := exec.Command("go", "run", ".", "artisan", plainText)
 	if err := utils.HandleOutput(command); err != nil {
 		utils.Error(
 			"artisan",
