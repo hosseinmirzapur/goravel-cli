@@ -21,13 +21,8 @@ var ArtisanCmd = &cobra.Command{
 			cmd.Help()
 			return
 		}
-
 		runArtisanCommand(args)
 	},
-}
-
-func init() {
-
 }
 
 func runArtisanCommand(args []string) {
@@ -40,5 +35,9 @@ func runArtisanCommand(args []string) {
 			err,
 		)
 	}
+
+}
+
+func init() {
 
 }
