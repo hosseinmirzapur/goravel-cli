@@ -17,9 +17,10 @@ var (
 )
 
 var StartCmd = &cobra.Command{
-	Use:   "start",
-	Short: "Start New Goravel App",
-	Long:  `Create a fresh Goravel application`,
+	Use:     "init",
+	Short:   "Start New Goravel App",
+	Long:    `Create a fresh Goravel application`,
+	Example: "goravel-cli start -n <PROJECT_NAME>",
 	Run: func(cmd *cobra.Command, args []string) {
 		// set project name
 		if appName == "." || appName == "" {
@@ -27,42 +28,42 @@ var StartCmd = &cobra.Command{
 		}
 
 		// clone goravel repo
-		utils.Info("cloning...")
+		utils.Info("cloning...", false)
 		err := cloneGoravelRepo(appName)
 		utils.Error("start", "clone goravel repository", err)
-		utils.Success("cloned successfully")
+		utils.Success("cloned successfully", true)
 
 		// remove .git from cloned repository
-		utils.Info("removing .git directory...")
+		utils.Info("removing .git directory...", false)
 		err = removeVersionControlDir(appName)
 		utils.Error("start", "remove version control directory", err)
-		utils.Success("removed successfully")
+		utils.Success("removed successfully", true)
 
 		// cd into project
-		utils.Info("cd into project...")
+		utils.Info("cd into project...", false)
 		err = os.Chdir(appName)
 		utils.Error("start", "cd into project", err)
-		utils.Success("cd successfully")
+		utils.Success("cd successfully", true)
 
 		// run go mod tidy to install dependencies
-		utils.Info("installing dependencies...")
+		utils.Info("installing dependencies...", false)
 		err = goModTidy()
 		utils.Error("start", "run go mod tidy", err)
-		utils.Success("installed successfully")
+		utils.Success("installed successfully", true)
 
 		// copy .env from .env.example
-		utils.Info("copy .env from .env.example...")
+		utils.Info("copy .env from .env.example...", false)
 		err = copyDotEnv()
 		utils.Error("start", "copy .env from .env.example", err)
-		utils.Success("copied successfully")
+		utils.Success("copied successfully", true)
 
 		// generate app key from artisan console
-		utils.Info("generating app key...")
+		utils.Info("generating app key...", false)
 		err = generateAppKey()
 		utils.Error("start", "generate app key", err)
-		utils.Success("generated successfully")
+		utils.Success("generated successfully", true)
 
-		utils.Alert("You're set! Create something amazing :)")
+		utils.Alert("You're set! Create something amazing :)", false)
 	},
 }
 
@@ -83,12 +84,7 @@ func cloneGoravelRepo(appName string) error {
 		config.GetGoravelConfig().GithubRepo,
 		fmt.Sprintf("./%s", appName),
 	)
-	out, err := command.Output()
-	if err != nil {
-		return err
-	}
-	fmt.Println(string(out))
-	return nil
+	return utils.HandleOutput(command)
 }
 
 func removeVersionControlDir(appName string) error {
@@ -97,12 +93,7 @@ func removeVersionControlDir(appName string) error {
 		"-rf",
 		fmt.Sprintf("./%s/.git", appName),
 	)
-	out, err := command.Output()
-	if err != nil {
-		return err
-	}
-	fmt.Println(string(out))
-	return nil
+	return utils.HandleOutput(command)
 }
 
 func goModTidy() error {
@@ -111,12 +102,7 @@ func goModTidy() error {
 		"mod",
 		"tidy",
 	)
-	out, err := command.Output()
-	if err != nil {
-		return err
-	}
-	fmt.Println(string(out))
-	return nil
+	return utils.HandleOutput(command)
 }
 
 func copyDotEnv() error {
@@ -125,12 +111,7 @@ func copyDotEnv() error {
 		"./.env.example",
 		"./.env",
 	)
-	out, err := command.Output()
-	if err != nil {
-		return err
-	}
-	fmt.Println(string(out))
-	return nil
+	return utils.HandleOutput(command)
 }
 
 func generateAppKey() error {
@@ -141,13 +122,7 @@ func generateAppKey() error {
 		"artisan",
 		"key:generate",
 	)
-	out, err := command.Output()
-	if err != nil {
-		return err
-	}
-	fmt.Println(string(out))
-	return nil
-
+	return utils.HandleOutput(command)
 }
 
 // Start Point

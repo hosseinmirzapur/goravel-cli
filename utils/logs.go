@@ -1,6 +1,7 @@
 package utils
 
 import (
+	"fmt"
 	"log"
 	"os"
 	"strings"
@@ -8,8 +9,8 @@ import (
 
 func Error(cmdSection, desc string, err error) {
 	if err != nil {
-		log.Printf(
-			"%s%s:%s/%s\n",
+		fmt.Printf(
+			"%s%s: %s%s\n",
 			Red,
 			strings.ToUpper(cmdSection),
 			desc,
@@ -20,7 +21,7 @@ func Error(cmdSection, desc string, err error) {
 	}
 }
 
-func Info(msg string) {
+func Info(msg string, separated bool) {
 	log.Println(
 		Blue,
 		strings.Repeat("#", 10),
@@ -30,7 +31,7 @@ func Info(msg string) {
 	)
 }
 
-func Success(msg string) {
+func Success(msg string, separated bool) {
 	log.Println(
 		Green,
 		strings.Repeat("#", 10),
@@ -40,7 +41,7 @@ func Success(msg string) {
 	)
 }
 
-func Alert(msg string) {
+func Alert(msg string, separated bool) {
 	log.Println(
 		Yellow,
 		strings.Repeat("#", 10),

@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/hosseinmirzapur/goravel-cli/cmd/artisan"
 	"github.com/hosseinmirzapur/goravel-cli/cmd/start"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -32,6 +33,7 @@ func Execute() {
 
 func addCommands() {
 	rootCmd.AddCommand(start.StartCmd)
+	rootCmd.AddCommand(artisan.ArtisanCmd)
 }
 
 func init() {
