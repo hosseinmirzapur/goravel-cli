@@ -24,7 +24,11 @@ var StartCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		// set project name
 		if appName == "." || appName == "" {
-			appName = findCurrentWorkDir()
+			if len(args) > 0 {
+				appName = args[0]
+			} else {
+				appName = findCurrentWorkDir()
+			}
 		}
 
 		// clone goravel repo
