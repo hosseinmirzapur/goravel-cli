@@ -5,8 +5,6 @@ package artisan
 
 import (
 	"fmt"
-	"os/exec"
-	"strings"
 
 	"github.com/hosseinmirzapur/goravel-cli/utils"
 	"github.com/spf13/cobra"
@@ -26,16 +24,12 @@ var ArtisanCmd = &cobra.Command{
 }
 
 func runArtisanCommand(args []string) {
-	plainText := strings.Join(args, " ")
-	command := exec.Command("go", "run", ".", "artisan", plainText)
-	if err := utils.HandleOutput(command); err != nil {
-		utils.Error(
-			"artisan",
-			fmt.Sprintf("unable to run \"%s\"", plainText),
-			err,
-		)
-	}
-
+	err := utils.GoRunDot(append([]string{"artisan"}, args...))
+	utils.Error(
+		"artisan",
+		fmt.Sprintf("unable to run \"%+v\"", args),
+		err,
+	)
 }
 
 func init() {

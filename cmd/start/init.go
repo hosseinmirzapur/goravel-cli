@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"log"
 	"os"
-	"os/exec"
 	"strings"
 
 	"github.com/hosseinmirzapur/goravel-cli/config"
@@ -82,51 +81,35 @@ func findCurrentWorkDir() string {
 }
 
 func cloneGoravelRepo(appName string) error {
-	command := exec.Command(
+	return utils.RunCommand([]string{
 		"git",
 		"clone",
 		config.GetGoravelConfig().GithubRepo,
 		fmt.Sprintf("./%s", appName),
-	)
-	return utils.HandleOutput(command)
+	})
 }
 
 func removeVersionControlDir(appName string) error {
-	command := exec.Command(
-		"rm",
-		"-rf",
-		fmt.Sprintf("./%s/.git", appName),
-	)
-	return utils.HandleOutput(command)
+	return os.RemoveAll(fmt.Sprintf("./%s/.git", appName))
 }
 
 func goModTidy() error {
-	command := exec.Command(
+	return utils.RunCommand([]string{
 		"go",
 		"mod",
 		"tidy",
-	)
-	return utils.HandleOutput(command)
+	})
 }
 
 func copyDotEnv() error {
-	command := exec.Command(
-		"cp",
-		"./.env.example",
-		"./.env",
-	)
-	return utils.HandleOutput(command)
+	return utils.Copy(".env.example", ".env")
 }
 
 func generateAppKey() error {
-	command := exec.Command(
-		"go",
-		"run",
-		".",
+	return utils.GoRunDot([]string{
 		"artisan",
 		"key:generate",
-	)
-	return utils.HandleOutput(command)
+	})
 }
 
 // Start Point
