@@ -14,24 +14,29 @@ var ArtisanCmd = &cobra.Command{
 	Use:     "artisan [command]...",
 	Short:   "A wrapper around \"go run . artisan\" command",
 	Example: "goravel-cli artisan list",
-	Run: func(cmd *cobra.Command, args []string) {
-		if len(args) == 0 {
-			cmd.Help()
-			return
-		}
-		runArtisanCommand(args)
-	},
+	Run:     runArtisanCommand,
 }
 
-func runArtisanCommand(args []string) {
+func runArtisanCommand(cmd *cobra.Command, args []string) {
 	err := utils.GoRunDot(append([]string{"artisan"}, args...))
 	utils.Error(
 		"artisan",
 		fmt.Sprintf("unable to run \"%+v\"", args),
 		err,
 	)
+	fmt.Printf(`
+ADDITIONAL COMMANDS:
+   env:
+     env:encrypt  %s
+     env:decrypt  %s
+	 
+`,
+		encryptEnvCmd.Short,
+		decryptEnvCmd.Short,
+	)
 }
 
 func init() {
-
+	ArtisanCmd.AddGroup(envGroup)
+	ArtisanCmd.AddCommand(encryptEnvCmd, decryptEnvCmd)
 }

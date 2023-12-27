@@ -20,9 +20,10 @@ var cfgFile string
 
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
-	Use:   "goravel-cli",
-	Short: "Goravel CLI Application",
-	Long:  "Start your amazing Goravel application in no time",
+	Use:     "goravel-cli",
+	Short:   "Goravel CLI Application",
+	Long:    "Start your amazing Goravel application in no time",
+	Version: "1.0.0",
 }
 
 // Execute adds all child commands to the root command and sets flags appropriately.
