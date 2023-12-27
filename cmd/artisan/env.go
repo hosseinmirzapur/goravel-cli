@@ -7,10 +7,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var (
-	encryptKey string = ""
-	decryptKey string = ""
-)
+var decryptKey string = ""
 
 // env group
 var envGroup = &cobra.Group{
@@ -44,18 +41,19 @@ func encryptEnv(cmd *cobra.Command, args []string) {
 	}
 
 	// encrypt .env content
-	encrypted, err := utils.Encrypt(data, []byte(encryptKey))
+	resData, err := utils.Encrypt(data)
 	if err != nil {
 		utils.Error("env", "error encrypting .env file", err)
 	}
 
 	// write encrypted data into .env.encrypted
-	err = utils.WriteFile(".env.encrypted", encrypted)
+	err = utils.WriteFile(".env.encrypted", resData.EncryptedContent)
 	if err != nil {
 		utils.Error("env", "error writing .env file", err)
 	}
 
 	utils.Success(".env file encrypted successfully", false)
+	utils.Info(string(resData.Key), false)
 
 }
 
@@ -82,11 +80,7 @@ func decryptEnv(cmd *cobra.Command, args []string) {
 }
 
 func init() {
-	// encryption section
-	encryptEnvCmd.Flags().StringVarP(&encryptKey, "key", "k", "", "encrypt key")
-	encryptEnvCmd.MarkFlagRequired("key")
+	decryptEnvCmd.Flags().StringVarP(&decryptKey, "key", "k", "", "decryption key")
+	decryptEnvCmd.MarkPersistentFlagRequired("key")
 
-	// decryption section
-	decryptEnvCmd.Flags().StringVarP(&decryptKey, "key", "k", "", "decrypt key")
-	decryptEnvCmd.MarkFlagRequired("key")
 }
