@@ -1,0 +1,117 @@
+{{- /*gotype:github.com/steebchen/prisma-client-go/generator.Root*/ -}}
+
+const datasources = `{{ .GetDatasourcesJSON }}`
+
+const schema = `{{ .EscapedDatamodel }}`
+const schemaDatasourceURL = "{{ .GetSanitizedDatasourceURL }}"
+const schemaEnvVarName = "{{ (index .Datasources 0).URL.FromEnvVar }}"
+
+{{ $hasBinaryTargets := false }}
+{{ if gt (len .Generator.BinaryTargets) 0 }}
+	{{ $hasBinaryTargets = true }}
+{{ end }}
+
+// hasBinaryTargets is true when binaryTargets are provided on generation time
+var hasBinaryTargets = {{ $hasBinaryTargets }}
+
+// NewClient creates a new Prisma Client Go client.
+// The client is not connected to the Prisma engine yet.
+//
+// Example:
+//
+//   client := db.NewClient()
+//   if err := client.Prisma.Connect(); err != nil {
+//     handle(err)
+//   }
+//
+//   defer func() {
+//     if err := client.Prisma.Disconnect(); err != nil {
+//       panic(fmt.Errorf("could not disconnect: %w", err))
+//     }
+//   }()
+func NewClient(options ...func(config *PrismaConfig)) *PrismaClient {
+	var config PrismaConfig
+	for _, option := range options {
+		option(&config)
+	}
+
+	c := newClient()
+
+	// use the schema connection url if set
+	url := config.datasourceURL
+	if url == "" {
+		url = schemaDatasourceURL
+		if url == "" {
+			// if not, use the schema env var name
+			url = os.Getenv(schemaEnvVarName)
+			if url == "" {
+				//panic("no connection string found")
+				println("WARNING: env var which was defined in the Prisma schema is not set" + schemaEnvVarName)
+			}
+		}
+	}
+
+	{{ if eq $.GetEngineType "dataproxy" }}
+		c.Engine = engine.NewDataProxyEngine(schema, url)
+	{{ else }}
+		c.Engine = engine.NewQueryEngine(schema, hasBinaryTargets, datasources, url)
+	{{ end }}
+
+	c.Prisma.Lifecycle = &lifecycle.Lifecycle{Engine: c.Engine}
+
+	return c
+}
+
+type PrismaConfig struct {
+	datasourceURL string
+}
+
+func WithDatasourceURL(url string) func(*PrismaConfig) {
+	return func(config *PrismaConfig) {
+		config.datasourceURL = url
+	}
+}
+
+func newMockClient(expectations *[]mock.Expectation) *PrismaClient {
+	c := newClient()
+	c.Engine = mock.New(expectations)
+	c.Prisma.Lifecycle = &lifecycle.Lifecycle{Engine: c.Engine}
+
+	return c
+}
+
+func newClient() *PrismaClient {
+	c := &PrismaClient{}
+
+	{{- range $model := $.DMMF.Datamodel.Models }}
+		c.{{ $model.Name.GoCase }} = {{ $model.Name.GoLowerCase }}Actions{client: c}
+	{{- end }}
+
+	c.Prisma = &PrismaActions{
+		Raw: &raw.Raw{Engine: c},
+		TX:  &transaction.TX{Engine: c},
+	}
+	return c
+}
+
+type PrismaActions struct {
+	*lifecycle.Lifecycle
+	*raw.Raw
+	*transaction.TX
+}
+
+// PrismaClient is the instance of the Prisma Client Go client.
+type PrismaClient struct {
+	// engine is an abstractions of what happens under the hood
+	// the query engine can spawn and manage the binary and send requests to it,
+	// while a mock engine would collect mocks to verify them later
+	engine.Engine
+
+	// prisma provides prisma-related methods as opposed to model methods, such as Connect, Disconnect or raw queries
+	Prisma *PrismaActions
+
+	{{ range $model := $.DMMF.Datamodel.Models }}
+		// {{ $model.Name.GoCase }} provides access to CRUD methods.
+		{{ $model.Name.GoCase }} {{ $model.Name.GoLowerCase }}Actions
+	{{- end }}
+}

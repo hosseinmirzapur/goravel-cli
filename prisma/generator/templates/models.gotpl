@@ -1,0 +1,73 @@
+{{- /*gotype:github.com/steebchen/prisma-client-go/generator.Root*/ -}}
+
+{{ range $model := $.DMMF.Datamodel.Models }}
+	// {{ $model.Name.GoCase }}Model represents the {{ $model.Name.String }} model and is a wrapper for accessing fields and methods
+	type {{ $model.Name.GoCase }}Model struct {
+		Inner{{ $model.Name.GoCase }}
+		Relations{{ $model.Name.GoCase }}
+	}
+
+	// Inner{{ $model.Name.GoCase }} holds the actual data
+	type Inner{{ $model.Name.GoCase }} struct {
+		{{ range $field := $model.Fields }}
+			{{- if not $field.Kind.IsRelation -}}
+				{{- if $field.IsRequired }}
+					{{ $field.Name.GoCase }} {{ if $field.IsList }}[]{{ end }}{{ $field.Type.Value }} {{ $field.Name.Tag $field.IsRequired }}
+				{{- else }}
+					{{ $field.Name.GoCase }} {{ if $field.IsList }}[]{{ else }}*{{ end }}{{ $field.Type.Value }} {{ $field.Name.Tag $field.IsRequired }}
+				{{- end }}
+			{{- end -}}
+		{{ end }}
+	}
+
+	// Raw{{ $model.Name.GoCase }}Model is a struct for {{ $model.Name }} when used in raw queries
+	type Raw{{ $model.Name.GoCase }}Model struct {
+		{{ range $field := $model.Fields }}
+			{{- if not $field.Kind.IsRelation -}}
+				{{- if $field.IsRequired }}
+					{{ $field.Name.GoCase }} {{ if $field.IsList }}[]{{ end }}Raw{{ $field.Type.GoCase }} {{ $field.Name.Tag $field.IsRequired }}
+				{{- else }}
+					{{ $field.Name.GoCase }} {{ if $field.IsList }}[]{{ else }}*{{ end }}Raw{{ $field.Type.GoCase }} {{ $field.Name.Tag $field.IsRequired }}
+				{{- end }}
+			{{- end -}}
+		{{ end }}
+	}
+
+	// Relations{{ $model.Name.GoCase }} holds the relation data separately
+	type Relations{{ $model.Name.GoCase }} struct {
+		{{ range $field := $model.Fields }}
+			{{- if $field.Kind.IsRelation }}
+				{{ $field.Name.GoCase }} {{ if $field.IsList }}[]{{ else }}*{{ end }}{{ $field.Type.Value }}Model {{ $field.Name.Tag false }}
+			{{- end -}}
+		{{ end }}
+	}
+
+	{{/* Attach methods for nullable (non-required) fields and relations. */}}
+	{{- range $field := $model.Fields }}
+		{{- if or (not $field.IsRequired) ($field.Kind.IsRelation) }}
+			func (r {{ $model.Name.GoCase }}Model) {{ $field.Name.GoCase }}() (
+				{{- if $field.IsList }}value []{{ else }}value{{ end }} {{ if and $field.Kind.IsRelation (not $field.IsList) }}*{{ end }}{{ $field.Type.Value }}{{ if $field.Kind.IsRelation }}Model{{ end -}}
+				{{- if or (not $field.Kind.IsRelation) (and (not $field.IsList) (not $field.IsRequired)) -}}
+					, ok bool
+				{{- end -}}
+			) {
+				if r.{{ if $field.Kind.IsRelation }}Relations{{ else }}Inner{{ end }}{{ $model.Name.GoCase }}.{{ $field.Name.GoCase }} == nil {
+					{{- if and ($field.Kind.IsRelation) ($field.IsRequired) }}
+						panic("attempted to access {{ $field.Name.GoLowerCase }} but did not fetch it using the .With() syntax")
+					{{- else }}
+						return value
+						{{- if or (not $field.Kind.IsRelation) (and (not $field.IsList) (not $field.IsRequired)) -}}
+							, false
+						{{- end -}}
+					{{- end }}
+				}
+				return {{ if and (not $field.Kind.IsRelation) (not $field.IsList) }}*{{ end }}r.
+					{{- if $field.Kind.IsRelation }}Relations{{ else }}Inner{{ end }}{{ $model.Name.GoCase }}.
+					{{- $field.Name.GoCase -}}
+					{{- if or (not $field.Kind.IsRelation) (and (not $field.IsList) (not $field.IsRequired)) -}}
+						, true
+					{{- end -}}
+			}
+		{{- end }}
+	{{ end }}
+{{ end }}

@@ -1,0 +1,25 @@
+.DS_store
+
+**migrations**/
+prisma-*
+query-engine-*
+prisma-client-go
+*_gen.go
+
+test/**/*.json
+
+# build folder for Prisma CLI binaries
+build/
+out/
+
+schema.temp.*.prisma
+# sqlite artifacts
+*.db
+*.db-journal
+
+# for development purposes
+schema.graphql
+.graphqlconfig
+
+# ignore go work sum, as we specifically do not want sum files for the integration test mod files
+go.work.sum

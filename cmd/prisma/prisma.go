@@ -4,7 +4,7 @@ Copyright © 2023 Hossein Mirzapur: hosseinmirzapur@gmail.com
 package prisma
 
 import (
-	"github.com/hosseinmirzapur/goravel-cli/cmd/prisma/install"
+	"github.com/hosseinmirzapur/goravel-cli/prisma/renderer"
 	"github.com/spf13/cobra"
 )
 
@@ -24,9 +24,10 @@ goravel-cli prisma migrate dev
 			cmd.Help()
 			return
 		}
+
+		renderer.Render(args)
 	},
 }
 
 func init() {
-	PrismaCmd.AddCommand(install.InstallCmd)
 }
