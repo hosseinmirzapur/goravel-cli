@@ -10,7 +10,9 @@ import (
 	"github.com/hosseinmirzapur/goravel-cli/cmd/artisan"
 	"github.com/hosseinmirzapur/goravel-cli/cmd/prisma"
 	"github.com/hosseinmirzapur/goravel-cli/cmd/start"
+	"github.com/hosseinmirzapur/goravel-cli/utils"
 	"github.com/spf13/cobra"
+	"github.com/spf13/cobra/doc"
 	"github.com/spf13/viper"
 )
 
@@ -28,6 +30,12 @@ var rootCmd = &cobra.Command{
 func Execute() {
 	err := rootCmd.Execute()
 	if err != nil {
+		os.Exit(1)
+	}
+
+	err = doc.GenMarkdownTree(rootCmd, "./")
+	if err != nil {
+		utils.Error("root", "Failed to generate markdown docs", err)
 		os.Exit(1)
 	}
 }
