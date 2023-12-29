@@ -22,7 +22,7 @@ func Render(args []string) {
 		return
 	case "init":
 		// override default init flags
-		args = append(args, "--generator-provider", "goravel-cli")
+		args = append(args, "--generator-provider", ".")
 		if err := cli.Run(args, true); err != nil {
 			panic(err)
 		}
