@@ -10,8 +10,10 @@ Start your amazing Goravel application in no time
 
 ```
       --config string   config file (default is $HOME/.goravel-cli.yaml)
+      --gen-docs        Generate command docs
   -h, --help            help for goravel-cli
   -t, --toggle          Help message for toggle
+  -v, --version         version for goravel-cli
 ```
 
 ### SEE ALSO

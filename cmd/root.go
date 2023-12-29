@@ -10,13 +10,14 @@ import (
 	"github.com/hosseinmirzapur/goravel-cli/cmd/artisan"
 	"github.com/hosseinmirzapur/goravel-cli/cmd/prisma"
 	"github.com/hosseinmirzapur/goravel-cli/cmd/start"
-	"github.com/hosseinmirzapur/goravel-cli/utils"
 	"github.com/spf13/cobra"
-	"github.com/spf13/cobra/doc"
 	"github.com/spf13/viper"
 )
 
-var cfgFile string
+var (
+	genDoc  bool = false
+	cfgFile string
+)
 
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
@@ -34,11 +35,10 @@ func Execute() {
 		os.Exit(1)
 	}
 
-	err = doc.GenMarkdownTree(rootCmd, "./")
-	if err != nil {
-		utils.Error("root", "Failed to generate markdown docs", err)
-		os.Exit(1)
+	if genDoc {
+		generateDocs()
 	}
+
 }
 
 func addCommands() {
@@ -55,6 +55,8 @@ func init() {
 	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.goravel-cli.yaml)")
 
 	rootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+
+	rootCmd.Flags().BoolVarP(&genDoc, "gen-docs", "", false, "Generate command docs")
 }
 
 // initConfig reads in config file and ENV variables if set.
