@@ -3,7 +3,7 @@
 Prisma Client in Go
 
 ```
-goravel-cli prisma [flags]
+goravel-cli prisma [command] [flags]
 ```
 
 ### Examples

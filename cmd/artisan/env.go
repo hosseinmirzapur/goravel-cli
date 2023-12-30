@@ -81,6 +81,7 @@ func decryptEnv(cmd *cobra.Command, args []string) {
 
 func init() {
 	decryptEnvCmd.Flags().StringVarP(&decryptKey, "key", "k", "", "decryption key")
-	decryptEnvCmd.MarkPersistentFlagRequired("key")
+	err := decryptEnvCmd.MarkFlagRequired("key")
+	utils.Error("env", "unable to recognize flag", err)
 
 }

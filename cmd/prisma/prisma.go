@@ -9,7 +9,7 @@ import (
 )
 
 var PrismaCmd = &cobra.Command{
-	Use:                "prisma",
+	Use:                "prisma [command]",
 	Short:              "Prisma Client in Go",
 	DisableFlagParsing: true,
 	Example: `
